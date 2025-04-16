@@ -1,0 +1,2 @@
+# dnsgod
+fast panel dns
