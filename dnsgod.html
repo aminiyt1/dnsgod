@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل ساخت کانفیگ WireGuard و DNS</title>
+<style>
+    body {
+        background-color: #FFA500;
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding: 20px;
+        color: #000;
+        font-size: 18px;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    .tabs {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .tab {
+        margin: 0 10px;
+        padding: 10px 20px;
+        cursor: pointer;
+        border-radius: 5px;
+        background-color: rgba(255, 140, 0, 0.8);
+        color: #000;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+
+    .tab:hover {
+        background-color: rgba(255, 69, 0, 1);
+    }
+
+    .tab.active {
+        background-color: rgba(255, 165, 0, 1);
+    }
+
+    .container {
+        background: rgba(255, 165, 0, 0.8);
+        padding: 20px;
+        border-radius: 10px;
+        display: inline-block;
+    }
+
+    button {
+        margin: 10px;
+        padding: 12px 24px;
+        font-size: 18px;
+        cursor: pointer;
+        color: #000;
+        border: 2px solid #000;
+        background: rgba(255, 140, 0, 0.8);
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: rgba(255, 69, 0, 1);
+    }
+
+    h1 {
+        font-size: 32px;
+        color: #000;
+        margin-bottom: 20px;
+    }
+
+    label, input, select {
+        font-size: 18px;
+        margin: 8px 0;
+        color: #000;
+    }
+
+    input, select, textarea {
+        padding: 10px;
+        width: 300px;
+        margin: 5px 0;
+        border-radius: 5px;
+        background-color: rgba(255, 255, 255, 0.1);
+        color: #000;
+    }
+
+    textarea {
+        height: 150px;
+    }
+
+    .channels {
+        margin-top: 30px;
+    }
+
+    #copyMessage {
+        display: none;
+        color: green;
+    }
+</style>
+</head>
+<body>
+
+<div class="tabs">
+    <div class="tab active" id="wireguardTab">پنل WireGuard</div>
+    <div class="tab" id="dnsTab">پنل DNS</div>
+</div>
+
+<div class="container" id="wireguardPanel">
+    <h1>تولید کننده پیکربندی WireGuard</h1>
+    <textarea id="configText" readonly placeholder="پیکربندی WireGuard اینجا نمایش داده می شود"></textarea>
+
+    <br>
+    <label for="country">انتخاب کشور:</label><br>
+    <select id="country">
+        <option value="emirates">🇦🇪Emirates</option>
+        <option value="turkey">🇹🇷Turkey</option>
+        <option value="qatar">🇶🇦Qatar</option>
+        <option value="germany">🇩🇪Germany</option>
+        <option value="france">🇫🇷France</option>
+        <option value="usa">🇺🇸 USA</option>
+        <option value="canada">🇨🇦Canada</option>
+        <option value="uk">🇬🇧UK</option>
+        <option value="iran">🇮🇷 Iran</option>
+        <option value="saudi_arabia">🇸🇦Saudi Arabia</option>
+        <option value="japan">🇯🇵 Japan</option>
+        <option value="china">🇨🇳China</option>
+        <option value="pakistan">🇵🇰Pakistan</option>
+        <option value="russia">🇷🇺Russia</option>
+    </select>
+
+    <br>
+    <label for="ip_version">انتخاب نسخه آی‌پی:</label><br>
+    <select id="ip_version">
+        <option value="ipv4">ipv4</option>
+        <option value="ipv6">ipv6</option>
+        <option value="both" selected>ipv4 و ipv6</option>
+    </select>
+
+    <label for="configName">نام فایل پیکربندی:</label><br>
+    <input id="configName" type="text" placeholder="" 
+    value="">
+
+    <br>
+    <label for="sim_card">انتخاب سیم کارت:</label><br>
+    <select id="sim_card">
+        <option value="hmrah_eol" selected>همراه اول</option>
+        <option value="Irancell">ایرانسل</option>
+    </select>
+
+    <br>
+    <button id="generateButton">تولید پیکربندی</button>
+
+    <!-- ذخیره فایل -->
+    <button id="saveButton">ذخیره به فایل</button>
+
+</div>
+
+<div class="container" id="dnsPanel" style="display:none;">
+    <h1>پنل DNS کشورها</h1>
+    <label for="dnsCountry">انتخاب کشور:</label><br>
+    <select id="dnsCountry">
+        <option value="emirates">🇦🇪Emirates</option>
+        <option value="turkey">🇹🇷Turkey</option>
+        <option value="qatar">🇶🇦Qatar</option>
+        <option value="germany">🇩🇪Germany</option>
+        <option value="france">🇫🇷France</option>
+        <option value="usa">🇺🇸 USA</option>
+        <option value="canada">🇨🇦Canada</option>
+        <option value="uk">🇬🇧UK</option>
+        <option value="iran">🇮🇷 Iran</option>
+        <option value="saudi_arabia">🇸🇦Saudi Arabia</option>
+        <option value="japan">🇯🇵 Japan</option>
+        <option value="china">🇨🇳China</option>
+        <option value="pakistan">🇵🇰Pakistan</option>
+        <option value="russia">🇷🇺Russia</option>
+    </select>
+
+    <br>
+    <label for="dnsIpVersion">انتخاب نسخه آی‌پی:</label><br>
+    <select id="dnsIpVersion">
+        <option value="ipv4">IPv4</option>
+        <option value="ipv6">IPv6</option>
+        <option value="both">IPv4 و IPv6</option>
+    </select>
+
+    <br>
+    <button id="generateDNSButton">نمایش DNS کشور انتخابی</button>
+
+    <textarea id="dnsText" readonly placeholder="DNS مربوط به کشور انتخابی اینجا نمایش داده می‌شود"></textarea>
+
+    <button id="copyDNSButton">کپی DNS</button>
+    <div id="copyMessage"></div>
+</div>
+
+<div class="channels">
+    <p><b>کانال های ما</b></p>
+    <p>کانال تلگرامی ما: <a href="https://t.me/asrnovin_ir" target="_blank">ASRNOVIN_IR</a></p>
+    <p>کانال یوتیوب ما: <a href="https://www.youtube.com/@aminiyt1" target="_blank">@AminiYt1</a></p>
+    <p>اینستاگرام ما: <a href="https://instagram.com/aminiyt1" target="_blank">Aminiyt1</a></p>
+</div>
+
+<script>
+    // مدیریت تب‌ها
+    document.getElementById("wireguardTab").addEventListener("click", function () {
+        document.getElementById("wireguardPanel").style.display = "block";
+        document.getElementById("dnsPanel").style.display = "none";
+        this.classList.add("active");
+        document.getElementById("dnsTab").classList.remove("active");
+    });
+
+    document.getElementById("dnsTab").addEventListener("click", function () {
+        document.getElementById("wireguardPanel").style.display = "none";
+        document.getElementById("dnsPanel").style.display = "block";
+        this.classList.add("active");
+        document.getElementById("wireguardTab").classList.remove("active");
+    });
+
+    // تولید کلیدهای WireGuard با استفاده از Crypto API
+    function generateWireguardKeys() {
+        function getRandomKey() {
+            const array = new Uint8Array(32);
+            window.crypto.getRandomValues(array);
+            let binary = "";
+            array.forEach(byte => {
+                binary += String.fromCharCode(byte);
+            });
+            return btoa(binary);
+        }
+
+        return {
+            privateKey: getRandomKey(),
+            publicKey: getRandomKey(),
+            preSharedKey: getRandomKey()
+        };
+    }
+
+    // تابع تولید عدد تصادفی
+    function randomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    // نقشه پیشوندهای IPv4 و IPv6 برای هر کشور
+    const ipv4Prefixes = {
+        "emirates": "217.199.",
+        "turkey": "78.189.",
+        "qatar": "37.205.",
+        "germany": "185.21.",
+        "france": "51.75.",
+        "usa": "104.27.",
+        "canada": "192.99.",
+        "uk": "185.128.",
+        "iran": "5.160.",
+        "saudi_arabia": "94.74.",
+        "japan": "133.242.",
+        "china": "116.31.",
+        "pakistan": "103.255.",
+        "russia": "95.213."
+    };
+
+    const ipv6Prefixes = {
+        "emirates": "2a01:4f8:1c1c::",
+        "turkey": "2a01:4f8:1c1c::",
+        "qatar": "2a01:4f8:1c1c::",
+        "germany": "2a01:4f8:1c1c::",
+        "france": "2a01:4f8:1c1c::",
+        "usa": "2600:3c01::",
+        "canada": "2600:3c01::",
+        "uk": "2a00:1098::",
+        "iran": "2a01:4f8:1c1c::",
+        "saudi_arabia": "2a01:4f8:1c1c::",
+        "japan": "2400:8500::",
+        "china": "2400:8500::",
+        "pakistan": "2400:8500::",
+        "russia": "2a01:4f8:1c1c::"
+    };
+
+    // تولید آدرس‌های IPv4
+    function generateRandomIPv4(prefix) {
+        return prefix + randomInt(0, 255) + "." + randomInt(0, 255);
+    }
+
+    // تولید آدرس‌های IPv6
+    function generateRandomIPv6(prefix) {
+        function randHex() {
+            return randomInt(0, 65535).toString(16);
+        }
+
+        return prefix + randHex() + ":" + randHex() + ":" + randHex();
+    }
+
+    // تابع تولید DNS بر اساس سیم کارت
+    function generateDNSServers(sim_card) {
+        if (sim_card === "hmrah_eol") return "10.202.10.10";
+        else if (sim_card === "Irancell") return "78.157.42.100";
+        else return "";
+    }
+
+    // تولید پیکربندی WireGuard
+    function generateWireguardConfig(country, ip_version, sim_card) {
+        const keys = generateWireguardKeys();
+
+        const ipv4_prefix = ipv4Prefixes[country];
+        const ipv6_prefix = ipv6Prefixes[country];
+
+        if (!ipv4_prefix && ip_version !== "ipv6") {
+            alert("کشور انتخابی برای IPv4 نامعتبر است.");
+            return "";
+        }
+
+        if (!ipv6_prefix && ip_version !== "ipv4") {
+            alert("کشور انتخابی برای IPv6 نامعتبر است.");
+            return "";
+        }
+
+        let ipv4_address = "";
+        let ipv6_address = "";
+
+        if (ip_version !== "ipv6") {
+            ipv4_address = generateRandomIPv4(ipv4_prefix);
+        }
+        if (ip_version !== "ipv4") {
+            ipv6_address = generateRandomIPv6(ipv6_prefix);
+        }
+
+        const endpoint = generateRandomIPv4(ipv4_prefix) + ":51820";
+
+        const dns_servers = generateDNSServers(sim_card);
+
+        let address = "";
+        if (ip_version === "ipv4") {
+            address = ipv4_address + "/24";
+        } else if (ip_version === "ipv6") {
+            address = ipv6_address + "/64";
+        } else if (ip_version === "both") {
+            address = ipv4_address + "/24, " + ipv6_address + "/64";
+        }
+
+        const config =
+            `# Configuration
+
+[Interface]
+PrivateKey = ${keys.privateKey}
+Address = ${address}
+DNS = ${dns_servers}
+MTU = 1280
+ListenPort = 51820
+
+[Peer]
+PublicKey = ${keys.publicKey}
+PresharedKey = ${keys.preSharedKey}
+Endpoint = ${endpoint}
+`;
+        return config;
+    }
+
+    // رویداد تولید پیکربندی
+    document.getElementById("generateButton").addEventListener("click", function () {
+        const country = document.getElementById("country").value;
+        const ip_version = document.getElementById("ip_version").value;
+        const sim_card = document.getElementById("sim_card").value;
+        const configName = document.getElementById("configName").value;
+
+        const config = generateWireguardConfig(country, ip_version, sim_card);
+        if (!config) return;
+
+        document.getElementById("configText").value = config;
+
+        let blob = new Blob([config], { type: "text/plain" });
+        let link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `${configName}.conf`;
+        link.click();
+    });
+
+    // تولید DNS رندوم برای هر کشور
+    function generateRandomDNS(country, ip_version) {
+        const ipv4Prefix = {
+            "emirates": "217.199.",
+            "turkey": "78.189.",
+            "qatar": "37.205.",
+            "germany": "185.21.",
+            "france": "51.75.",
+            "usa": "104.27.",
+            "canada": "192.99.",
+            "uk": "185.128.",
+            "iran": "5.160.",
+            "saudi_arabia": "94.74.",
+            "japan": "133.242.",
+            "china": "116.31.",
+            "pakistan": "103.255.",
+            "russia": "95.213."
+        };
+
+        const ipv6Prefix = {
+            "emirates": "2a01:4f8:1c1c::",
+            "turkey": "2a01:4f8:1c1c::",
+            "qatar": "2a01:4f8:1c1c::",
+            "germany": "2a01:4f8:1c1c::",
+            "france": "2a01:4f8:1c1c::",
+            "usa": "2600:3c01::",
+            "canada": "2600:3c01::",
+            "uk": "2a00:1098::",
+            "iran": "2a01:4f8:1c1c::",
+            "saudi_arabia": "2a01:4f8:1c1c::",
+            "japan": "2400:8500::",
+            "china": "2400:8500::",
+            "pakistan": "2400:8500::",
+            "russia": "2a01:4f8:1c1c::"
+        };
+
+        function generateRandomIPv4(prefix) {
+            return prefix + randomInt(0, 255) + "." + randomInt(0, 255);
+        }
+
+        function generateRandomIPv6(prefix) {
+            function randHex() {
+                return randomInt(0, 65535).toString(16);
+            }
+
+            return prefix + randHex() + ":" + randHex() + ":" + randHex();
+        }
+
+        let dns = "";
+        if (ip_version === "ipv4") {
+            dns = generateRandomIPv4(ipv4Prefix[country]);
+        } else if (ip_version === "ipv6") {
+            dns = generateRandomIPv6(ipv6Prefix[country]);
+        } else if (ip_version === "both") {
+            dns = `${generateRandomIPv4(ipv4Prefix[country])}
+78.157.42.100
+${generateRandomIPv6(ipv6Prefix[country])}
+${generateRandomIPv6(ipv6Prefix[country])}`;                     
+        }
+        return dns;
+    }
+
+    // رویداد تولید DNS
+    document.getElementById("generateDNSButton").addEventListener("click", function () {
+        const country = document.getElementById("dnsCountry").value;
+        const ip_version = document.getElementById("dnsIpVersion").value;
+
+        const dns = generateRandomDNS(country, ip_version);
+        if (!dns.trim()) {
+            alert("اطلاعات DNS برای کشور انتخابی موجود نیست!");
+            return;
+        }
+        document.getElementById("dnsText").value = dns;
+    });
+
+    // رویداد کپی کردن DNS
+    document.getElementById("copyDNSButton").addEventListener("click", function () {
+        const dns = document.getElementById("dnsText").value;
+        if (!dns.trim()) {
+            alert("متنی برای کپی کردن وجود ندارد!");
+            return;
+        }
+        navigator.clipboard.writeText(dns).then(() => {
+            alert("DNS با موفقیت کپی شد!");
+        }).catch(err => {
+            alert("خطا در کپی کردن DNS: " + err);
+        });
+    });
+</script>
+
+</body>
+</html>
+
